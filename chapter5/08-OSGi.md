@@ -57,11 +57,6 @@ OSGi 框架有一个中心化的注册表，这个注册表从 publish-find-bind
 
 OSGi 核心规范(core specification)中的服务，为核心服务，必须存在的。
 
-### 参考
-
-- https://www.cnblogs.com/binarylei/p/8525388.html
-
-
 ## OSGi Framework
 
 - Equinox：OSGi R4 core framework 的一个实现，一组实现各种可选的 OSGi bundle 和一些开发基于 OSGi 技术的系统所需要的基础构件。 Eclipse 是基于 Equinox 项目开发的一个典型例子。具体内容可以从 http://www.eclipse.org/equinox/ 下载。比较适合不需要集成太多外部技术的应用，如桌面应用开发，当需要进行集成时，会遇到相当多的兼容性问题;
@@ -74,6 +69,12 @@ OSGi 核心规范(core specification)中的服务，为核心服务，必须存�
 
 Java 9，OSGi和模块化的未来
 
-- https://mindawei.github.io/2018/02/05/Java-9%EF%BC%8COSGi%E5%92%8C%E6%A8%A1%E5%9D%97%E5%8C%96%E7%9A%84%E6%9C%AA%E6%9D%A5%EF%BC%881%EF%BC%89/
+- [Java-9，OSGi和模块化的未来（1）](https://mindawei.github.io/2018/02/05/Java-9%EF%BC%8COSGi%E5%92%8C%E6%A8%A1%E5%9D%97%E5%8C%96%E7%9A%84%E6%9C%AA%E6%9D%A5%EF%BC%881%EF%BC%89/)
 
-- https://mindawei.github.io/2018/02/06/Java-9%EF%BC%8COSGi%E5%92%8C%E6%A8%A1%E5%9D%97%E5%8C%96%E7%9A%84%E6%9C%AA%E6%9D%A5%EF%BC%882%EF%BC%89/
+- [Java-9，OSGi和模块化的未来（2）](https://mindawei.github.io/2018/02/06/Java-9%EF%BC%8COSGi%E5%92%8C%E6%A8%A1%E5%9D%97%E5%8C%96%E7%9A%84%E6%9C%AA%E6%9D%A5%EF%BC%882%EF%BC%89/)
+
+
+### 参考
+
+- [OSGi介绍系列系列](https://www.cnblogs.com/binarylei/p/8525388.html)
+- [OSGi使用范围思考](https://blog.csdn.net/itd018/article/details/51035176)

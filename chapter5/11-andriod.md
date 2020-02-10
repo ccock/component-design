@@ -1,2 +1,2 @@
-# Andriod design
+# Component in Andriod
 

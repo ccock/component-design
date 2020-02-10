@@ -34,7 +34,7 @@
     * [OSGi](chapter5/08-OSGi.md)
     * [Eclipse](chapter5/09-eclipse.md)
     * [OSGI in C/CPP](chapter5/10-OSGi-C.md)
-    * [Andriod Component](chapter5/11-andriod.md)
+    * [Component in Andriod](chapter5/11-andriod.md)
     * [轻量化容器](chapter5/12-container.md)
     * [组件安全](chapter5/13-security.md)
 
