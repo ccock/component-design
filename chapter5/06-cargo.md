@@ -1,5 +1,7 @@
 # cargo
 
+![rust crate](./images/rust-crate.jpg)
+
 ## reference
 
 - [cargo book](https://doc.rust-lang.org/cargo/)
