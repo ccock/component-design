@@ -28,9 +28,9 @@ Conan的服务端主要负责包的存储，并不构建和产生包。包产生
 
 - [ConanCenter](https://conan.io/center/)：这是官方的中央仓，用于管理社区贡献的各种流行开源库，例如Boost，Zlib，OpenSSL，Poco等。
 
-### 二进制管理
+### 基于二进制的包管理
 
-Conan最强大的特性使他能为任何可能的平台和配置生成和管理预编译的二级制文件。使用预编译的二进制文件可以避免用户反复的从源码进行构建，节省大量的开发以及持续集成服务器用于构建的时间，同时也提高了交付件的可重现性和可跟踪性。
+Conan最强大的特性使它能为任何可能的平台和配置生成和管理预编译的二级制文件。使用预编译的二进制文件可以避免用户反复的从源码进行构建，节省大量的开发以及持续集成服务器用于构建的时间，同时也提高了交付件的可重现性和可跟踪性。
 
 Conan中的包由一个"conanfile.py"定义。该文件定义了包的依赖、包含的源码、以及如何从源码构建出二进制文件。一个包的"conanfile.py"配置可以生成任意数量的二进制文件，每个二进制可以面向不同的平台和配置（操作系统、体系结构、编译器、以及构件类型等等）。二进制的创建和上传，在所有平台上使用相同的命令，并且都是基于一套包的源码产生的。使用Conan不用为不同的操作系统提供不同的解决方案。
 
@@ -287,7 +287,96 @@ c3fcd3d76192e4007dfb496cca67e13b
 运行`conan install`命令，帮我们下载了依赖的Poco程序包，及其间接依赖的OpenSSL以及Zlib库。Conan自动根据我们的平台下载合适的二进制（Conan首次运行时会自动检测平台配置）。在这个过程中，conan会在当前目录下（示例中的build目录）创建conanbuildinfo.cmake文件，在该文件中能够看到各种CMake变量；还有一个conaninfo.txt文件，保存了各种配置、依赖和构建选项信息。
 
 > 注意：
-> Conan会自动产生根据自动检测的结果（OS、编译器、架构等等）产生默认的profile配置。这些信息会打印在`conan install`的开始。强烈建议你review下这些选项，然后根据需要进行调整。具体调整方式可以参考[这里](https://docs.conan.io/en/latest/getting_started.html#getting-started-other-configurations)。
+> Conan会自动根据对系统的检测结果（OS、编译器、架构等等）产生默认的profile配置。这些信息会打印在`conan install`的开始。强烈建议你review下这些选项，然后根据需要进行调整。具体调整方式可以参考[这里](https://docs.conan.io/en/latest/getting_started.html#getting-started-other-configurations)。
+
+了解`conan install`的过程是很重要的。当命令执行时，`<userhome>/.conan/profiles/default`文件里面的配置将会被命令行程序应用。
+
+![conan install flow](./images/conan-install_flow.png)
+
+举个例子，当命令`conan install .. --settings os="Linux" --settings compiler="gcc"`运行时，一些步骤将被执行：
+
+- 检查对应的包的说明文件（例如 poco/1.9.4）是否已经在本地缓存中存在。如果第一次运行conan，缓存会是空的；
+- 从远程的中央仓查找包的说明文件。默认从[conan-center](https://bintray.com/conan/conan-center)查找，这个可以改。
+- 如果中央仓中有包的说明文件，conan客户端下载以及将其存在缓存中；
+- 根据包的说明文件以及输入配置（Linux，GCC），conan在本地缓存查找与包对应的二进制；
+- 如果本地缓存没有，conan在中央仓查找对应的二进制包，并下载；
+- 最终，根据`[generator]`的描述，将为构建系统产生需要的文件；
+
+Conan Server上维护了针对主流编译器和版本的二进制包，如果特定配置的二进制包不存在conan将会抛出一个错误。你可以使用`conan install .. --build=missing`来从源码构建你需要的二进制包，当然这需要你要的二进制配置被包的说明文件所支持。
+
+### 按照自定义配置构建包
+
+在这个例子中，我们使用conan检查的系统默认配置做的构建。
+
+`conan install`运行前需要先定义好profile，conan会自动检测系统（编译器、体系架构等等）并将对应的profile存在`~/.conan/profiles/default`文件中。你可以根据你的需要编辑这个文件，配置新的一系列profile。
+
+如果我们配置了一个32-bit的GCC构建类型的profile，起名为`gcc_x86`。我们可以如下运行：
+
+```sh
+conan install .. --profile=gcc_x86
+```
+
+> 提醒：强烈建议通过`conan config install`命令使用和管理[Profiles](https://docs.conan.io/en/latest/reference/profiles.html#profiles)
+
+同样，用户可以通过`conan install`的`--setting`参数更改profile中的部分配置。例如，想要构建32位的版本，也可以使用如下命令：
+
+```sh
+conan install .. --settings arch=x86
+```
+
+上面的命令将会使用`--settings arch=x86`配置替代默认profile中的配置，然后在本地安装一个不同的二进制包。
+
+为了能够使用32位的二进制包，你还需要调整你的本地工程构建配置：
+
+- 对于windows，将CMake的构建改为调用`Virual Studio 14`；
+- Linux上，需要在CMakeLists.txt中加入`-m32`；如 `SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32")`，包括加入到`CMAKE_C_FLAGS, CMAKE_SHARED_LINK_FLAGS and CMAKE_EXE_LINKER_FLAGS`。我们随后会展示这件事也可以用conan自动的做。
+- 在macOS上，你需要定义`-DCMAKE_OSX_ARCHITECTURES=i386`
+
+### 查看依赖
+
+获取下来的包存在本地缓存（一般在`.conan/data`目录下），以供别的工程复用。这样在没有网络的时候依然可以清空工程继续工作。搜索本地缓存的包用该命令 `conan search "*"`。
+
+查看一个二进制包的细节可以用`conan search poco/1.9.4@`。
+
+包末尾的`@`符号用于指定特定的版本，否则conan会以模式搜索的方式，返回匹配“poco/1.9.4”的所有包。
+
+可以通过`conan info <path>`命令查看当前工程的所有依赖包的细节，这个命令需要在指定工程conanfile.txt文件所在的路径。
+
+可以使用`conan info <path> --graph=file.html`来生成依赖图，可以指定Dot或者HTML格式。
+
+![conan info deps html graph](./images/conan-info_deps_html_graph.png)
+
+### 查找包
+
+Conan默认配置的从[Conan Center](https://bintray.com/conan/conan-center)查找和安装包。
+
+你可以使用如下命令在Conan Center中查找包：
+
+```sh
+$ conan search "open*" --remote=conan-center
+Existing package recipes:
+
+openal/1.18.2@bincrafters/stable
+openal/1.19.0@bincrafters/stable
+openal/1.19.1
+opencv/2.4.13.5@conan/stable
+opencv/3.4.3@conan/stable
+opencv/3.4.5@conan/stable
+opencv/4.0.0@conan/stable
+opencv/4.0.1@conan/stable
+opencv/4.1.0@conan/stable
+opencv/4.1.1@conan/stable
+openexr/2.3.0
+openexr/2.3.0@conan/stable
+openexr/2.4.0
+openjpeg/2.3.0@bincrafters/stable
+openjpeg/2.3.1
+openjpeg/2.3.1@bincrafters/stable
+openssl/1.0.2s
+...
+```
+
+可以看到上面搜索出来的二进制包，有的以`@`加一个后缀结束。这个后缀`user/channel`字段，一般用于组织或个人更改了包的配置后，用于和原包做区分的（在包名和版本号之外）。
 
 ## reference
 - [homesite](https://conan.io/)
