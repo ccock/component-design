@@ -33,15 +33,15 @@
 
 ### 契约测试
 
-契约测试的概念诞生于[Martin Fowler 网站上06年的一篇文
+契约测试的概念诞生于Martin Fowler 网站上06年的[一篇文
 章](https://martinfowler.com/articles/consumerDrivenContracts.html)
 它又被称之为：消费者驱动的契约测试（Consumer Driven Contracts）。文中介绍主要应
 用于服务的提供商和消费端之间的数据交互格式，后来Martin
-Fowler又在2011年的专门写了一篇关于[契约测试的文
-章](https://martinfowler.com/bliki/ContractTest.html)。 这篇文章谈到了契约测试和
+Fowler又在2011年的专门写了一篇关于[契约测试
+](https://martinfowler.com/bliki/ContractTest.html) 的文章。 这篇文章谈到了契约测试和
 `test double`的差别。最初这种测试技术更多的用于前后端分离后的契约保证，但在微服
 务大行其道的今天，这种思想开始更多应用于服务间接口自动化测试的领域，
-比较有名框架有`PACT`和`Spring Cloud Contract`，下面我们一起看一下契约测试的实现
+比较有名框架有[PACT](https://docs.pact.io/) 和[Spring Cloud Contract](https://spring.io/projects/spring-cloud-contract)，下面我们一起看一下契约测试的实现
 
 #### PACT
 Pact是一个开源框架，最早是由澳洲最大的房地产信息提供商REA Group的开发者及咨询师
@@ -104,6 +104,108 @@ Contract更多的应该被称为“基于契约的测试”。
 基于标准化的描述，才有可能达到自动化的一些目标，在PACT中是pact文件，而SCC中是
 Groovy的DSL，这些要么在社区或语言文化内形成了事实标准。如何设计出优秀的具备语义
 说明而又方便自动化的API描述DSL，可能是首要挑战。
+
+##### 契约描述
+
+####### PACT 的契约描述
+
+```json
+{
+  "consumer": {
+    "name": "TodoApp"
+  },
+  "provider": {
+    "name": "TodoService"
+  },
+  "interactions": [
+    {
+      "description": "a request for get user",
+      "providerState": "have a matched user",
+      "request": {
+        "method": "GET",
+        "path": "/1"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        "body": {
+          "id": 1,
+          "name": "God"
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "pactSpecification": {
+      "version": "0.0.0"
+    }
+  }
+}
+
+```
+
+###### Sprint Cloud Contract
+有两种形式yaml和groovy，表达力上近似，基本上看到的例子都是基于rest接口做的描述
+
+``` yaml
+request:
+  method: GET
+  url: /foo
+  bodyFromFile: request.json
+response:
+  status: 200
+  bodyFromFile: response.json
+```
+
+我们看到现存的两种契约描述方式上还是属于具像化的描述方式，有点像一个个用例一样，
+但用例十分完备，到底抽象的几口形式是如何的？接口的文档又是通过其他的如swagger来
+生成的，接口和契约不应该是同源的吗？
+
+对于理想契约文件，应该选择一种相对中立的描述语言，因为基于契约要自动生成接口文档和
+测试套件，考虑工具的易用性设计和可读性，选择通用的yaml，json，protobuff等的形式来作为外部DSL，
+更具有可操作性。但不建议直接使用组件间数据交互的格式，具体的通信格式是实现细节，
+直接依赖会导致后续变化的不稳定。
+
+契约文件中必须的结构：
+1. 数据的结构
+2. 数据的字段的约束
+3. 字段的描述
+
+生成接口文件，以及注释，需要1，2，3
+生成接口文档，需要1，2，3
+生成测试数据，需要1，2
+
+其中字段约束这部分还是缺失的，我们拿json举例
+``` json
+ 
+ "consumer": {
+    "name": "TodoApp"
+    "id": "11" //这里是用户的唯一标示，@int(1,30)
+  },
+  "provider": {
+    "name": "TodoService"
+  },
+```
+上述id这个字段有注释的部分说明它的用途，而在后面取值范围（1，30）是生成测试用例
+的关键数据，具体的设计还需要一个完善的过程，这里并不展开。
+
+
+
+
+##### 契约管理
+契约文件作为组件之间的接口定义，常规也是会被版本管理起来的，但契约文件又有它但特
+殊性，比如放在消费者那里？还是放在提供者那里？如何感知到契约发生了变化，进而触发
+相应的用例代码生成和测试执行？这些都暗示应该单独管理契约文件，PACT中的提供了这样
+的一套管理框架，Pact Broker是契约的管理者(代理人)。它提供了：
+
+* 发布和获取契约的接口
+* 服务之间的依赖关系
+* 契约的版本管理
+
+且不论是否需要单独的管理软件来管理契约文件，单独将契约隔离出进行版本管理是十分有
+必要的，会有利于基于契约变化引起的变更管理。
 
 
 ## 单元测试
