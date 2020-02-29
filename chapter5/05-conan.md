@@ -1,5 +1,11 @@
 # conan
 
+先用思维导图做个总结：
+
+![](./images/conan-xmind.jpg)
+
+下面翻译了官网文档开头部分的介绍和示例。
+
 ## conan介绍
 
 ![conan logo](./images/jfrog_conan_logo.png)
