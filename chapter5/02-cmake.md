@@ -287,6 +287,20 @@ cmake 原生就提供了很多扩展 Module, 提供了很多有价值的方法�
 
 cmake 还提供了很多系统和编译器的检查。
 
+Cmake 本身也是一门编程语言，也可以封装实现一些功能方法来提供一些更加友好的功能 API，当然也可以引入一些第三方已经开发好的 cmake Module 来使用。
+例如：bazel.cmake 库就是一个非常好用的库，导入之后可以在 cmake 中想类似 bazel 的方式来定义 target，减少了很多重复的定义。
+
+例如：
+
+```
+project(testcase VERSION 0.1.0)
+include(bazel)
+
+cc_library(cpu_id SRCS cpu_id.cc)
+cc_test(cpu_id_test SRCS cpu_id_test.cc DEPS cpu_id glog)
+cc_test(hello SRCS hello.cc)
+```
+
 ### 参考资料
 
 - [cmake-doc](https://cmake.org/cmake/help/v3.17/index.html)
