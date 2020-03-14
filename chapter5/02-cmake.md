@@ -249,7 +249,8 @@ cmake 还提供了很多系统和编译器的检查。
 
 Cmake 中提供了 module 用于直接生成 rpm 包，需要设置一系列的变量，下面是一个最简单的 rmp 包的 Cmake 脚本如下：
 
-```project (my_project)
+```
+project (my_project)
 cmake_minimum_required (VERSION 2.8)
 
 set(VERSION "1.0.1")
@@ -274,15 +275,13 @@ Cmake 本身也是一门编程语言，也可以封装实现一些功能方法�
 
 例如：
 
-````
-
+```
 project(testcase VERSION 0.1.0)
 include(bazel)
 
 cc_library(cpu_id SRCS cpu_id.cc)
 cc_test(cpu_id_test SRCS cpu_id_test.cc DEPS cpu_id glog)
 cc_test(hello SRCS hello.cc)
-
 ```
 
 ### 参考资料
@@ -292,5 +291,4 @@ cc_test(hello SRCS hello.cc)
 - [cmake examples](https://github.com/ccock/cmake-examples)
 - [cmake modules](https://github.com/rpavlik/cmake-modules)
 - [Simplifying build in C++](https://mropert.github.io/2017/10/19/simplifying_build-part1/)
-```
-````
+
