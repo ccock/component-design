@@ -75,6 +75,29 @@ nm libvalue.so
 
 这时符号无论是编译时链接还是动态dlopen则都是可以找到的。
 
+## symbol table for LD
+
+还有一种情况，假设动态库libcode.so链接了一个静态库libutil.a。静态库libutil.a中的符号默认在动态库libcode.so中是导出的。
+
+为了隐藏静态库中的符号，我们可以给静态库中需要导出的符号增加`__attribute__ ((visibility ("default")))`，同时给静态库的构建加上`-fvisibility=hidden`。
+
+遗憾的是，某些情况下，我们是没法修改静态库的源码的（静态库是第三方提供的），这时我们可以采用显示为链接器指定符号表的方式，选择性导出符号。
+
+创建一个libcode.version文件：
+
+```
+CODEABI_1.0 {
+    global: *entry_point*;
+    local: *;
+};
+```
+
+然后如下构建libcode.so：
+
+```sh
+$ g++ code.cpp libutil.a -o shared -fPIC -Wl,--version-script=libcode.version
+```
+
 ## reference
 
 - [Controlling the Exported Symbols of Shared Libraries](https://www.gnu.org/software/gnulib/manual/html_node/Exported-Symbols-of-Shared-Libraries.html)
