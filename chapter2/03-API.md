@@ -39,6 +39,8 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fvisibility=hidden")
 add_library(value SHARED value.c)
 ```
 
+对于CMake，也可以如下指定可见性：`set(CMAKE_C_VISIBILITY_PRESET hidden)`或者对于C++：`set(CMAKE_CXX_VISIBILITY_PRESET hidden) `。
+
 ```sh
 nm libvalue.so
 
