@@ -16,7 +16,7 @@ target_link_libraries(main value)
 
 可以手动指定链接这个so，例如`target_link_libraries(main "${CMAKE_CURRENT_BINARY_DIR}/libvalue.so")`，OSX下会提醒`libvalue.so`是一个bundle，只可以dlopen。而在linux下则可以直接链接。
 
-由此可见，MODULE不允许链接是CMAKE的限制，它利用了不同的平台的限制来完成这个约束。但是在linux由于是部分bundle和so的，所以绕过CMake只要产生的so都是可以链接的。
+由此可见，MODULE不允许链接是CMAKE的限制，它利用了不同的平台的限制来完成这个约束。但是在linux下，由于是不分bundle和so的，所以绕过CMake，只要产生的so都是可以链接的。
 
 ## control the visibility of API
 
@@ -231,7 +231,7 @@ target_link_libraries(main dl)
 
 当然解决方案是：
 
-- 可以让动态库生成的时候，通过静态链接把自己需要的符号包含完整：
+- 可以在生成动态库的时候，通过静态链接把自己需要的符号包含完整：
 
 ```c
 //var.c
@@ -246,7 +246,7 @@ add_library(value SHARED value.c)
 target_link_libraries(value var)
 ```
 
-这样libvalue.so中的符号就是完整的，自然静态或者动态使用是没有问题的。
+这样libvalue.so中的符号就是完整的，自然静态或者动态使用都是没有问题的。
 
 但是如果把cmake改为如下，让var变成一个动态库：
 
@@ -265,14 +265,15 @@ linux-vdso.so.1 (0x00007ffce57c7000)
 libvar.so => /code/build/libvar.so (0x00007f222e3b5000)
 ```
 
-所以最终链接libvalue.so的时候不用指定链接libvar.so:
+所以最终使用方链接libvalue.so的时候不用指定链接libvar.so:
 
 ```cmake
 add_library(var SHARED var.c)
 add_library(value SHARED value.c)
 target_link_libraries(value var)
+
 add_executable(main main.c)
-target_link_libraries(main value)
+target_link_libraries(main value) # 只用指定链接libvalue.so
 ```
 
 而当我们删除libvar.so后，再次运行main就会失败：
@@ -282,20 +283,21 @@ target_link_libraries(main value)
 ./main: error while loading shared libraries: libvar.so: cannot open shared object file: No such file or directory
 ```
 
-上述行为在main使用dlopen动态加载libvalue.so时是一样的，只用动态加载libvalue.so，不用指定libvar.so。而当删除libvar.so后，再次运行main会出错，提示找不到libvar.so。
+上述行为在main使用dlopen动态加载libvalue.so时是一样的: 只用动态加载libvalue.so，不用指定libvar.so。而当删除libvar.so后，再次运行main也会出错，提示找不到libvar.so。
 
 - 可以在main的链接中指定libvalue.so缺少的符号所在的库
 
 ```cmake
 add_library(var STATIC var.c)
 add_library(value SHARED value.c)
+
 add_executable(main main.c)
-target_link_libraries(main value var)
+target_link_libraries(main value var) # 显示指定链接var静态库
 ```
 
-这时libvalue.so中标明缺失g_value符号，最后main的可执行里面有g_value符号。
+这时libvalue.so中依然是缺失g_value符号，但是最后main的可执行程序的符号表里面是有g_value符号的，它是从libvar.a中链接到的。
 
-而将var改为动态库后，main中也没有g_value符号了，而是运行时从libvar.so中获取。当删除libvar.so后，再次运行main会失败：
+而将var改为动态库后，main的符号表中也没有g_value符号了，而是运行时从libvar.so中获取。当删除libvar.so后，再次运行main会失败：
 
 ```sh
 # rm -rf libvar.so
@@ -303,24 +305,27 @@ target_link_libraries(main value var)
 ./main: error while loading shared libraries: libvar.so: cannot open shared object file: No such file or directory
 ```
 
-而将这种做法，应用于dlopen打开libvalue.so的main实现的时候，是没有效果的：
+而用上面的思路继续测试动态加载的场景： 让main先和var静态链接，然后在运行时动态dlopen打开libvalue.so：
 
 ```cmake
-add_library(var STATIC var.c)
-# add_library(var SHARED var.c)
+add_library(var STATIC var.c) # 或者写为： add_library(var SHARED var.c)
 add_library(value SHARED value.c)
+
 add_executable(main main.c)
 target_link_libraries(main dl var)
 ```
 
-上例中无论是将var生成为静态库还是动态库，对于main来说都不会将var中的符号提前导入。所以main中dlopen libvalue.so的时候，会报错：
+上例中无论是将var生成为静态库还是动态库，对于main来说都不会将var中的符号提前导入。
+所以main中dlopen libvalue.so的时候，会报错：
 
 ```
  ./main 
 ./libvalue.so: undefined symbol: g_value
 ```
 
-即使是静态链接动态库，main也要自己知道libvalue.so的所有依赖，为其链接全。这样无异于把libvalue的依赖暴露给了使用者。因此我们建议对于动态库，最好是完整的，自己将自己的依赖链接全，不要缺符号。
+这是由于main在和var链接（无论var是静态库还是动态库）的时候，main中是不缺符号的，因此不会提前从var库中链接任何符合（包括libvalue.so中缺少的g_value）。
+
+通过这个例子，我们知道动态库缺少符号，只能通过静态链接的方式，由使用方帮其通过链接其它的库，将符号在最终的目标中补全。而即使采用这种方式，main也要自己知道libvalue.so的所有依赖，这样无异于把libvalue的依赖暴露给了使用者。因此我们建议对于动态库，最好是完整的，自己将自己的依赖链接全，不要缺符号。
 
 对于静态库，一般情况下和别的静态库不会提前链接，另外静态库经常用于代码裁剪，所以不做这个约束。
 
