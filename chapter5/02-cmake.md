@@ -8,11 +8,12 @@ CMake 是一个开源的跨平台自动化建构系统，是目前最主流的 C
 
 ---
 
-旧版 CMake 2.0 主要是基于 directory 来构建，很多复用只能靠变量实现。Modern CMake 最大的改进是引入了 target，支持了闭包性和传播性，从而实现了构建可以模块化。
+旧版 CMake 2.0 主要是基于 directory 来构建，很多复用只能靠变量实现。Modern CMake 最大的改进是引入了 target，支持了对构建的闭包性和传播性的控制
+，从而实现了构建可以模块化。
 
 **推荐 1： 在 Modern CMake 中强烈推荐抛弃旧的 directory 方式，使用 target 的方式构建整个工程。**
 
-#### 1. 分类
+#### 1. tagert 分类
 
 Target 中最核心的两个分类是：executable, library。
 
@@ -126,11 +127,11 @@ find_package 用于查找本地安装的第三方包。Modern CMake 可以在用
 
 使用 find_package 包括两种方式：config-file package 和 module package。其中 config-file package 表示 target 使用 package CMake 构建，可以直接拿来使用。而 Module package 的表示使用的 target 没有使用 CMake 构建，需要下游的使用者编写 CMake 文件。
 
-Modern CMake 中提供了制作安装包的脚本。在 cmake 文件中加入 include(CMakePackageConfigHelpers) ，就可以使用封装方法来生成 ConfigVersion.CMake 文件，设置了包的相关信息。
+Modern CMake 中提供了制作安装包的脚本。在 cmake 文件中加入 include(CMakePackageConfigHelpers)，就可以使用封装方法来生成 ConfigVersion.CMake 文件，其中已经自动设置好了包的相关信息。
 
 更多关于 Package 使用介绍请参考：[Modern CMake Package 使用手册](<https://CMake.org/CMake/help/latest/manual/CMake-packages.7.html#manual:CMake-packages(7)>)
 
-**推荐 5： 对外发布 target 时， Modern CMake 推荐使用 config-file package 的方式，支持直接命令安装。**
+**推荐 5： Modern CMake 中 推荐使用 config-file package 的方式将 target 发布成 package，利用 package 机制将对依赖库的使用标准化。**
 
 使用 find_package 仅可以使用安装到本地的仓库，但很多时候还需要使用远程仓库上的 库，可以有下面几种做法：
 
@@ -233,6 +234,8 @@ cc_test(hello SRCS hello.cc)
 
 Bazel 是一个支持多语言、跨平台的高效构建工具，对 C++的支持非常友好，是目前 Google 主推的构建工具，具体请参考好友「刘光聪」的系列文章：[Bazel build 介绍](https://www.jianshu.com/p/ab5ef02bfa2c)
 
+**推荐 6：推荐了解与复用 CMake 中内置的 module 和第三方开源的 module 中的功能实现，避免重复去造轮子。**
+
 ### 扩展补充
 
 ---
@@ -318,7 +321,8 @@ Modern CMake 3.0 功能和特性与 CMake2.0 上有很大的变化，而且新�
 - 在 Modern CMake 中强烈建议为 target 添加依赖接口时，从使用者角度考虑写明 INTERFACE， PRIVATE, PUBLIC。
 - 在 Modern CMake 中推荐使用 target_sources 来添加源文件依赖，保持每个接口的职责单一。
 - 充分利用 Modern CMake 强大的依赖传递功能，合理设计每个 target 间的依赖关系。
-- 对外发布 target 时， Modern CMake 推荐使用 config-file package 的方式，支持直接命令安装。
+- 推荐使用 config-file package 的方式将 target 发布成 package，利用 package 机制将对依赖库的使用标准化。
+- 推荐了解与复用 CMake 中内置的 module 和第三方开源的 module 中的功能实现，避免重复去造轮子。
 
 ### 参考资料
 
