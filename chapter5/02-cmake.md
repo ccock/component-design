@@ -234,7 +234,7 @@ cc_test(hello SRCS hello.cc)
 
 Bazel 是一个支持多语言、跨平台的高效构建工具，对 C++的支持非常友好，是目前 Google 主推的构建工具，具体请参考好友「刘光聪」的系列文章：[Bazel build 介绍](https://www.jianshu.com/p/ab5ef02bfa2c)
 
-**推荐 6：推荐了解与复用 CMake 中内置的 module 和第三方开源的 module 中的功能实现，避免重复去造轮子。**
+**推荐 6：推荐复用 CMake 内置的 module 与第三方开源 module 中的功能实现，避免重复去造轮子。**
 
 ### 扩展补充
 
@@ -322,7 +322,7 @@ Modern CMake 3.0 功能和特性与 CMake2.0 上有很大的变化，而且新�
 - 在 Modern CMake 中推荐使用 target_sources 来添加源文件依赖，保持每个接口的职责单一。
 - 充分利用 Modern CMake 强大的依赖传递功能，合理设计每个 target 间的依赖关系。
 - 推荐使用 config-file package 的方式将 target 发布成 package，利用 package 机制将对依赖库的使用标准化。
-- 推荐了解与复用 CMake 中内置的 module 和第三方开源的 module 中的功能实现，避免重复去造轮子。
+- 推荐复用 CMake 内置的 module 与第三方开源 module 中的功能实现，避免重复去造轮子。
 
 ### 参考资料
 
