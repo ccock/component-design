@@ -666,16 +666,19 @@ src、tests和benchmarks下有自己更具体的CMake文件用于控制内部的
 最后总结一下关于依赖管理的话题:
 
 ```
-1) 好的依赖管理技术就是要保证我们在不同阶段所依赖的东西可以低成本的精准获得，同时又不会过度获得;
-2) 基于全量源码的管理方式下，每个模块要能够独立的开发、构建、测试与发布，依赖于好的设计规划能力，工程工具能力以及纪律约束；具体实践参见正文；
-3）根据自己的项目特点，评估采用包管理的能力对依赖进行更好的管理；
+1) 依赖管理技术要保证在不同阶段所依赖的东西可以低成本的精准获得，同时又不会过度获得;
+2) 依赖管理关乎软件模块能否独立的开发、构建、测试与发布，依赖于好的设计规划能力，工程工具能力以及纪律约束；具体实践参见正文；
+3）用构建工具控制
+3）根据自己的项目特点，评估采用包管理对依赖进行更好的管理；
 ```
 
 ## 代码举例
 
 开放与隐藏是有矛盾的，自寻平衡。
 
-## cmake Module
+## 其它补充
+
+### CMake Module特性测试
 
 cmake中将库生成为Module方式的话：
 
@@ -693,7 +696,7 @@ target_link_libraries(main value)
 
 由此可见，MODULE不允许链接是CMAKE的限制，它利用了不同的平台的限制来完成这个约束。但是在linux下，由于是不分bundle和so的，所以绕过CMake，只要产生的so都是可以链接的。
 
-## control the visibility of API
+### control the visibility of API
 
 如下文件，编译指定`-fvisibility=hidden`，则生成的动态库符号中全局变量和函数都是隐藏的。
 
@@ -752,7 +755,7 @@ nm libvalue.so
 
 这时符号无论是编译时链接还是动态dlopen则都是可以找到的。
 
-## symbol table for LD
+### symbol table for LD
 
 还有一种情况，假设动态库libcode.so链接了一个静态库libutil.a。静态库libutil.a中的符号默认在动态库libcode.so中是导出的。
 
@@ -775,7 +778,7 @@ CODEABI_1.0 {
 $ g++ code.cpp libutil.a -o shared -fPIC -Wl,--version-script=libcode.version
 ```
 
-## do not miss symbols in dynamic library
+### do not miss symbols in dynamic library
 
 ```c
 //value.c
