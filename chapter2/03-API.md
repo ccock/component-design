@@ -672,15 +672,11 @@ src、tests和benchmarks下有自己更具体的CMake文件用于控制内部的
 4）根据自己的项目特点，选择在合适的时机使用包管理器，对依赖进行更好的管理；
 ```
 
-## 尾巴
-
-由于在写这系列文章的时候，恰好脚踝通风引起滑膜炎，痛苦不堪，所以就先写到这里了。
+## 源码库推荐
 
 在写这些文章的时候，把很多优秀的C和C++开源库又翻出来看了下。C的有[cJSON](https://github.com/DaveGamble/cJSON)、[jemalloc](https://github.com/jemalloc/jemalloc)、[libuv](https://github.com/libuv/libuv)、[redis](https://github.com/antirez/redis)、[sqlite](https://repo.or.cz/sqlite.git)；C++的有[CAF](https://github.com/actor-framework/actor-framework)、[cpp-react](https://github.com/schlangster/cpp.react)、[folly](https://github.com/facebook/folly)、[muduo](https://github.com/chenshuo/muduo)。本来想找对符号隐藏和依赖管理做得好的库给大家剖析下的，但是这次就先缩水一下吧。
 
 在上述库中，推荐大家有精力的话可以看看著名的[libuv]（https://github.com/libuv/libuv）。libuv是一个跨平台的异步IO库，被用在著名的nodejs里作为事件驱动的引擎。它综合使用了我们前面说到的各种实践：从目录布局，到库的API符号隐藏，到构建设计，当然它的源码设计也是很不错的。
-
-最后，祝大家2020年一切顺利！
 
 ## 补充
 
