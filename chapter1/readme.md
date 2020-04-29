@@ -1,31 +1,72 @@
 # 组件化定义
 
-维基百科：[基于组件的软件工程](https://en.wikipedia.org/wiki/Component-based_software_engineering)：component-based software engineering（CBSE），component-based development（CBD）
+首先可以从维基百科上看组件化的定义和历史。
 
-组件化发展两个阶段：
-- 最开始基于组件的开发，强调通过分离关注点，让软件内部松耦合，可复用，使软件开发长期低成本；
-- 实践中，人们认为组件应该是面向服务架构中的一个服务，这样就为组件引入了更多特点；例如，组件能够基于事件驱动架构（event-driven-architecture：EDA）产生和消费事件；
+维基百科：[基于组件的软件工程：component-based software engineering（CBSE）](https://en.wikipedia.org/wiki/Component-based_software_engineering)。
 
-组件的特点：
-- 一个独立的软件组件（software componnet）是一个软件包（software package），一个web service，一个web resource或者是一个封装了一系列相关功能和数据的模块；
-- 组件是内聚的和模块化的；
-- 组件间通过接口（interface）进行协作；接口是组件的签名，使用方无需了解组件内部，组件间仅通过接口进行协作；（UML组件图：边界、接口和协作关系）
-- 组件的可替换性：只要是兼容的，一个新版本的组件就可以替换老的组件（开发态或者运行态替换）。B能替换A，B满足A的契约：对系统所提供的不少于A，所使用的不多于A；
-- 组件经常是对象视图或者是一组对象视图，而非类视图（强调组件的运行完整性），另外还要附上IDL定义的组件接口；
-- 组件要强调其可复用性，组件应该：1）足够的文档；2）完整的测试（功能和非功能）；3）设计时明确组件会被放置于不能预测的上下文环境；
-- 组件是需要有底座框架支撑的：http://www.existentialprogramming.com/2010/05/hole-for-every-component-and-every.html。（Crnkovic, I.; Sentilles, S.; Vulgarakis, A.; Chaudron, M. R. V. (2011). "A Classification Framework for Software Component Models". 这篇论文对所有的组件化框架进行了汇总分类）；
+从维基百科上也可以看“模块化”的定义和历史：[模块化程序设计：modular programming](https://en.wikipedia.org/wiki/Modular_programming)，以便和组件化进行区分。
 
-组件的历史：
--  Douglas McIlroy's address at the NATO conference on software engineering in Garmisch, Germany, 1968, titled Mass Produced Software Components. 应对软件危机，举例是Unix操作系统；
--  Brad Cox of Stepstone largely defined the modern concept of a software component.[4] He called them Software ICs and set out to create an infrastructure and market for these components by inventing the Objective-C programming language. 
--  组件有两种形态：1）可执行程序的构成部分；2）分布式系统中通过网络交互或者IPC（进程间通讯）的每个独立可执行体；
--  一些实现：IBM led the path with their System Object Model (SOM) in the early 1990s. As a reaction, Microsoft paved the way for actual deployment of component software with Object linking and embedding (OLE) and Component Object Model (COM).
+看完上述维基百科的内容以及其中的历史资料和引用文章，可以看到模块化和组件化都是上世纪60年代应对软件危机提出来的。模块化设计是指：将软件设计成一系列内聚功能和数据的软件单元，用于提高局部软件的复用度，降低软件内部耦合度，降低软件开发的长期成本。
 
+同时可以看出人们对于组件化的定义和发展则经过了两个阶段：
 
-区别于模块化，维基百科：[modular programming](https://en.wikipedia.org/wiki/Modular_programming)
+- 第一个阶段，强调通过组件化让软件内部分离关注点，达到松耦合，可复用的效果，使软件开发长期低成本，可见这一阶段组件化和模块化并没有本质区别。（参见Douglas McIlroy 1968年在德国的软件工程会议上发布的题目为“Mass Produced Software Components”的演讲）
 
-模块化类似于组件化第一阶段，强调解耦、复用。将逻辑上内聚的功能和数据封装起来，形成一个模块。
+- 第二个阶段，服务化架构出现后，人们在实践中逐渐认为组件更应该是面向服务架构中的一个服务对象，这样就为组件引入了更多特点；（可以参考微软的Component Object Model（COM）技术以及其它类似技术）；
 
-面向对象流行后，模块化被掩盖了。当前模块化是比类更大的一种逻辑闭包划分。语言的模块化参考Java或者C++的模块化特性演进过程；
+从上述过程中可以看到，首先组件一定是模块化的产物，但是组件比模块有更多约束和要求。从维基百科上对组件的特点分析可见，组件需要：
 
-因此可以知道，组件一定是模块，模块未必是组件。组件比模块有更多的特性要求。
+- 组件满足模块化要求，功能和数据内聚；
+- 组件在开发态是独立的，必须是独立的软件包（software package）；
+- 组件要利用复用，所以文档健全，并经过了严格的功能和非功能测试；
+- 组件间通过接口协作，接口是组件的签名，使用方无需了解组件接口以内的实现；
+- 基于组件接口的兼容性，组件是可以被替换的（组件不约束替换的时机）；
+- 组件在运行时是需要有底座框架支持的（管理组件的生命周期，通讯和资源等）；
+
+虽然有维基百科的如上定义，但是在业界实践中，组件化仍是一个比较笼统的技术。我们可以看到在不同的技术栈和软件产品中组件化差异很大。事实上，每个技术栈或者产品都是根据自己的特点和目的，定义符合自己要求的组件化定义和特点，只要内核和业界的普遍认知不发生大的冲突即可。
+
+例如我们经常说的前端组件，往往指的是一个包含完整HTML、CSS和JS代码一个UI控件，它是静态的，它强调代码的闭包性，让使用者更容易复用一个UI控件的代码。而在Andriod APP中的组件，则是指一个可以独立运行的子页面和功能，它更加强调的是APP的局部可以独立替换。
+
+所以企业采取组件化开发，本质上是要根据自己的目的，在不违背组件的业界认知下，根据自己的目标细化组件定义和特点要求。并且，这种细化和特点要求，一定要比模块化的要求更强和更细致。
+
+我们可以将组件化的特点归纳到下面两个部分：
+
+- 组件化软件开发：从开发态看，组件化要使能代码松耦合、易于复用的开发方式，降低软件开发成本，提高软件开发效率；
+- 组件化软件架构：从软件架构看，组件要支持独立发布、部署和替换等运行时特征，满足可独立发布、替换以及可灵活裁剪的商业价值；
+
+以下是一下补充材料。
+
+## 组件化软件开发
+
+“组件化软件开发”的核心是通过提炼一系列组件化的工程工具，使得软件开发更加松耦合，软件复用的成本更低、效率更高。这里可以借助编程语言的模块化特性以及包管理工具达到这一点。这里可以参考的资料有：
+
+1）Java语言的模块化特性和发展，通过下面两篇文章，可以看到JAVA在发展的过程中如果通过引入module特性解决资源占用、安全性以及耦合性的问题：
+
+    - [Java-9，OSGi和模块化的未来（1）](https://mindawei.github.io/2018/02/05/Java-9%EF%BC%8COSGi%E5%92%8C%E6%A8%A1%E5%9D%97%E5%8C%96%E7%9A%84%E6%9C%AA%E6%9D%A5%EF%BC%881%EF%BC%89/)
+    - [Java-9，OSGi和模块化的未来（2）](https://mindawei.github.io/2018/02/06/Java-9%EF%BC%8COSGi%E5%92%8C%E6%A8%A1%E5%9D%97%E5%8C%96%E7%9A%84%E6%9C%AA%E6%9D%A5%EF%BC%882%EF%BC%89/)
+
+2）C/C++符号隐藏和依赖管理技术，包括C/C++的包管理技术。可以看到C/C++在开发态如何管理软件工程，让模块间松耦合且易于复用：
+
+    - [C/C++代码复用与包管理](https://www.jianshu.com/p/5de358c1c007)
+    - [C/C++符号隐藏与依赖管理](https://www.jianshu.com/p/5904507ef750)
+
+## 组件化软件架构
+
+“组件化软件架构”的核心是，如何设计组件化软件架构，让软件能够做到独立发布、部署和替换。这里有两种架构风格，一种是插件化架构，一种是服务化架构。可以参考的资料有：
+
+1）附带文档 software-component-models.pdf，是一片论文，总结和分类了目前所有的组件化框架及其模型；
+
+2）普遍认为，服务化架构是组件化架构的一种。所以服务化相关的书籍推荐《微服务架构设计模式》；
+
+3）组件化设计的核心是分离关注点，可以用领域建模作指导，这点和微服务是一样的。推荐看看《领域驱动设计》相关的书和文章。
+[领域驱动设计答疑](https://www.jianshu.com/p/f876d19a9aa3)
+
+## 补充
+
+1）通过附带文档 component-platform-evolution.pdf ，可以看看单体平台会遇到的问题，以及为何需要演进到组件化平台；
+
+2）附带文档 component-base-software-engineering.pdf，是对“组件化软件开发”和“组件化软件架构”两个部分关系的整理的要求梳理；
+
+3）附带文档导图 component-outline.jpg，是组件化技术和所有参考素材。
+
+![](./component-outline.jpg)
