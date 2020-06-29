@@ -346,6 +346,7 @@ baseurl=http://mirror.sohu.com/centos/$relasever/os/$basearch/
 - [Linux软件安装中RPM与YUM 区别和联系](https://www.cnblogs.com/LiuChunfu/p/8052890.html)
 - [CentOS的软件包的管理之rpm和yum](https://www.cnblogs.com/renpingsheng/p/7050418.html)
 - [源码制作RPM包](https://blog.csdn.net/u010749412/article/details/22993479)
+- [rpmbuild案例](https://blog.csdn.net/u012373815/article/details/73257754)
 - [SPEC文件解析](https://blog.csdn.net/iamonlyme/article/details/53131105?utm_medium=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase)
 - [本机安装yum仓库](https://www.cnblogs.com/FengGeBlog/p/10230311.html)
 
