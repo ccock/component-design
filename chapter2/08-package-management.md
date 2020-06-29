@@ -66,6 +66,11 @@ RPM分包：在把二进制文件打包时，将主要功能打入主包。将�
 - 主包：核心包。
 - 分包：又称为支包。
 
+源码包和二进制包。
+
+`rpmbuild -bs hello-1.0.0.spec`生成源码包，里面包含spec文件和源码的tar.gz文件；src的rpm包放在SRPMS下；
+`rpmbuild -bb hello-1.0.0.spec`生成二进制包，里面只包含spec file段下的文件；二进制包放在RPMS下；
+
 默认安装位置：
 /etc  配置文件放置目录
 /usr/bin  一些可执行文件
@@ -339,14 +344,23 @@ $YUM0-9：这十个变量分别被 shell 环境中的同名变量的值所替代
 例：配置基于网易镜像站的跨平台路径。
 baseurl=http://mirror.sohu.com/centos/$relasever/os/$basearch/
 
+## 遗留问题
+
+- yum下载rpm包的时候，不会自动下载RPM包的构建时依赖（spec中 build requirements）对吧？
+- yum下载rpm包的时候，会自动下载RPM包的发布时依赖（spec中：requirements中对应的）对吧？那么RPM包的发布时依赖关系，yum库是怎么知道的？
+- RPM包打包的时候，spec 中file段下指定的是需要打包的文件，相对于build-root目录来说？也就是其实spec文件是不会打包到RPM包中的对吧？
+- yum下载一个RPM包，其中的二进制文件安装到linux哪个系统目录下，默认是怎么抉择的？
+
 ## reference
 
 - [Linux软件安装管理](https://www.jianshu.com/p/ee60a9d6bd7d)
 - [Linux包管理基础：apt、yum、dnf 和 pkg](https://linux.cn/article-8782-1.html)
 - [Linux软件安装中RPM与YUM 区别和联系](https://www.cnblogs.com/LiuChunfu/p/8052890.html)
 - [CentOS的软件包的管理之rpm和yum](https://www.cnblogs.com/renpingsheng/p/7050418.html)
+- [Linux 中 RPM 的构建与打包(深度推荐)](https://www.ibm.com/developerworks/cn/linux/l-lo-rpm-build-package/index.html)
 - [源码制作RPM包](https://blog.csdn.net/u010749412/article/details/22993479)
 - [rpmbuild案例](https://blog.csdn.net/u012373815/article/details/73257754)
+- [SPEC文件](https://www.cnblogs.com/michael-xiang/p/10480809.html)
 - [SPEC文件解析](https://blog.csdn.net/iamonlyme/article/details/53131105?utm_medium=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase)
 - [本机安装yum仓库](https://www.cnblogs.com/FengGeBlog/p/10230311.html)
 
